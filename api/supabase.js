@@ -1,11 +1,7 @@
 const { createClient } = require('@supabase/supabase-js');
 
-const supabaseUrl = process.env.SUPABASE_URL;
-const supabaseKey = process.env.SUPABASE_ANON_KEY;
-
-if (!supabaseUrl || !supabaseKey) {
-  console.warn("Supabase credentials missing. Ensure SUPABASE_URL and SUPABASE_ANON_KEY environment variables are set.");
-}
+const supabaseUrl = 'https://agpxofzartbkgelljmeo.supabase.co';
+const supabaseKey = 'sb_publishable_oxkPdxHk477KlXVJSpxVmA_TGRnrWh1';
 
 const supabase = createClient(supabaseUrl, supabaseKey);
 
