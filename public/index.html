@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dunes Volleyball Live Hub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #0b1120; color: #f1f5f9; font-family: system-ui, -apple-system, sans-serif; }
+        .glass-card { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.08); }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <!-- Navbar -->
+    <header class="border-b border-slate-800 bg-slate-900/80 sticky top-0 z-50 backdrop-blur-md">
+        <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <i class="fa-solid fa-volleyball text-amber-500 text-2xl"></i>
+                <span class="text-xl font-bold tracking-tight bg-gradient-to-r from-amber-400 to-amber-200 bg-clip-text text-transparent">DUNES VOLLEYBALL HUB</span>
+            </div>
+            <button onclick="toggleAdminModal()" class="px-3 py-1.5 rounded-lg bg-amber-500/10 text-amber-400 border border-amber-500/20 hover:bg-amber-500/20 transition text-sm font-medium flex items-center gap-2">
+                <i class="fa-solid fa-lock text-xs"></i> Admin Portal
+            </button>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 py-8 flex-1 w-full space-y-8">
+        
+        <!-- Live & Recent Matches -->
+        <section>
+            <h2 class="text-lg font-semibold text-slate-300 mb-4 flex items-center gap-2">
+                <i class="fa-solid fa-circle text-red-500 text-xs animate-pulse"></i> Live & Recent Fixtures
+            </h2>
+            <div id="matches-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <!-- Loaded dynamically -->
+            </div>
+        </section>
+
+        <!-- Stats & Standings Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            
+            <!-- Leaderboard -->
+            <section class="lg:col-span-2 space-y-4">
+                <h2 class="text-lg font-semibold text-slate-300"><i class="fa-solid fa-trophy text-amber-400 mr-2"></i>Top Performers</h2>
+                <div class="glass-card rounded-xl p-4 overflow-x-auto">
+                    <table class="w-full text-left text-sm text-slate-300">
+                        <thead class="text-xs uppercase bg-slate-800/60 text-slate-400">
+                            <tr>
+                                <th class="p-3">Rank</th>
+                                <th class="p-3">Player</th>
+                                <th class="p-3">Grade</th>
+                                <th class="p-3 text-center">Spike Points</th>
+                                <th class="p-3 text-center">Blocks</th>
+                                <th class="p-3 text-center">Aces</th>
+                            </tr>
+                        </thead>
+                        <tbody id="leaderboard-body" class="divide-y divide-slate-800"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- House Standings -->
+            <section class="space-y-4">
+                <h2 class="text-lg font-semibold text-slate-300"><i class="fa-solid fa-ranking-star text-amber-400 mr-2"></i>House Standings</h2>
+                <div class="glass-card rounded-xl p-4">
+                    <table class="w-full text-left text-sm text-slate-300">
+                        <thead class="text-xs uppercase bg-slate-800/60 text-slate-400">
+                            <tr>
+                                <th class="p-2">Team</th>
+                                <th class="p-2 text-center">P</th>
+                                <th class="p-2 text-center">W</th>
+                                <th class="p-2 text-center">L</th>
+                                <th class="p-2 text-center">Pts</th>
+                            </tr>
+                        </thead>
+                        <tbody id="standings-body" class="divide-y divide-slate-800"></tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Admin Modal -->
+    <div id="admin-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
+        <div class="glass-card max-w-md w-full rounded-2xl p-6 border border-slate-700 space-y-4">
+            <div class="flex justify-between items-center">
+                <h3 class="font-bold text-lg text-amber-400">Admin Control Panel</h3>
+                <button onclick="toggleAdminModal()" class="text-slate-400 hover:text-white">&times;</button>
+            </div>
+            
+            <div id="admin-auth" class="space-y-3">
+                <label class="block text-xs uppercase text-slate-400">Enter Admin Passkey</label>
+                <input type="password" id="admin-passkey" placeholder="Passkey" class="w-full p-2.5 rounded-lg bg-slate-900 border border-slate-700 text-white text-sm">
+                <button onclick="authenticateAdmin()" class="w-full py-2 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold rounded-lg text-sm transition">Authenticate</button>
+            </div>
+
+            <div id="admin-controls" class="hidden space-y-4">
+                <p class="text-xs text-green-400"><i class="fa-solid fa-check-circle"></i> Authenticated</p>
+                <div class="border-t border-slate-800 pt-3 space-y-3">
+                    <h4 class="text-sm font-semibold text-slate-300">Update Match Score</h4>
+                    <select id="admin-match-select" class="w-full p-2 rounded-lg bg-slate-900 border border-slate-700 text-sm text-white"></select>
+                    <div class="grid grid-cols-2 gap-2">
+                        <input type="number" id="team-a-sets" placeholder="Team A Sets" class="p-2 rounded-lg bg-slate-900 border border-slate-700 text-sm text-white">
+                        <input type="number" id="team-b-sets" placeholder="Team B Sets" class="p-2 rounded-lg bg-slate-900 border border-slate-700 text-sm text-white">
+                    </div>
+                    <select id="match-status" class="w-full p-2 rounded-lg bg-slate-900 border border-slate-700 text-sm text-white">
+                        <option value="LIVE">LIVE</option>
+                        <option value="COMPLETED">COMPLETED</option>
+                        <option value="UPCOMING">UPCOMING</option>
+                    </select>
+                    <button onclick="saveMatchScore()" class="w-full py-2 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold rounded-lg text-sm transition">Update Scorecard</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
